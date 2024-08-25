@@ -1,0 +1,4 @@
+1. npx create-react-app react-gemini-vision-app
+2. Remove all the useless lines of code.
+3. Create "server.js" file same hierarchy as package.json
+4. npm i cors dotenv express fs multer nodemon @google/generative-ai
