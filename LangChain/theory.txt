@@ -1,0 +1,13 @@
+// Creating virtual environment
+pip install virtualenv
+python -m venv myenv  
+
+// Create .env file to store API keys
+
+// Installing packages
+pip install langchain
+pip install langchain_openai
+pip install streamlit
+pip install python_dotenv
+using -> pip install -r .\requirements.txt
+
