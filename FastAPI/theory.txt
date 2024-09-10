@@ -1,0 +1,7 @@
+python -m pip install fastapi
+pip install uvicorn
+
+uvicorn myapi:app --reload
+
+<link generated>/docs - Swagger documentaion of the API end-points.
+

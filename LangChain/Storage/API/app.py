@@ -1,15 +1,15 @@
-from fastapi import FastAPI
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from fastapi import FastAPI, HTTPException
 from langserve import add_routes
-import uvicorn
-import os
-from langchain_community.llms import Ollama
+from pydantic import BaseModel
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+import ssl, httpx, os
 from dotenv import load_dotenv
-import ssl, httpx
+import uvicorn
+from langchain_community.llms import Ollama
 
 load_dotenv()
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 openai_api_key = os.getenv("OPENAI_API_KEY")
 langchain_api_key = os.getenv("LANGCHAIN_API_KEY")
 
@@ -30,22 +30,39 @@ app = FastAPI(
 )
 
 model = ChatOpenAI(
-    model_name="gpt-35-turbo",
+    model_name="gpt-4o",
     openai_api_base="https://llm-proxy-api.ai.openeng.netapp.com",
-    openai_api_key=openai_api_key,
+    openai_api_key=os.getenv("OPENAI_API_KEY"),
     model_kwargs={'user': 'pranitm'},
     http_client=httpx_client
 )
+output_parser = StrOutputParser()
+
 llm = Ollama(model="llama3.1")
 
-prompt1 = ChatPromptTemplate.from_template("Write me an essay about {topic} with 100 words.")
+prompt1 = ChatPromptTemplate([("system","""You are an expert essay writer."""),
+    ("human","Write me an essay about {log} with 100 words.")])
 prompt2 = ChatPromptTemplate.from_template("Write me a poem about {topic} with 100 words.")
 
-add_routes(
-    app,
-    prompt1|model,
-    path="/essay"
-) 
+# add_routes(
+#     app,
+#     prompt1|model|output_parser,
+#     path="/essay"
+# ) 
+
+class Query(BaseModel):
+    log: str
+
+@app.post("/query")
+def handle_query(query: Query):
+    question = query.log
+    try:
+        # Create and execute the chain
+        chain = prompt1 | llm | output_parser
+        response = chain.invoke({"log": question})
+        return{"response": response}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 add_routes(
     app,
