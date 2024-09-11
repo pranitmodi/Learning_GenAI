@@ -5,3 +5,6 @@ uvicorn myapi:app --reload
 
 <link generated>/docs - Swagger documentaion of the API end-points.
 
+// gt=0 - greater than 0.
+// lt=3 - less than 3, Thus from 1 to 2.
+
