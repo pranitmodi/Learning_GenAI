@@ -1,0 +1,9 @@
+Load Source Data -> Data Ingestion
+Load, Transform and Embed
+
+Convert data into chunks
+These chunks into vectors -> embeddings
+These embeddings are stored in a Vector DB
+
+# pip install ipykernel
+
